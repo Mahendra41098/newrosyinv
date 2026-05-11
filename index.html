@@ -551,7 +551,7 @@ tr:hover td{background:rgba(0,0,0,.015)}
     <div style="margin-bottom:8px">
       <label class="fl">Apps Script Web App URL</label>
       <div style="display:flex;gap:6px">
-        <input class="fi" type="text" id="gd-url" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;font-size:11px">
+        <input class="fi" type="text" id="gd-url" value="https://script.google.com/macros/s/AKfycbzLZlvbujf40_u5xMk_-xeSNFS_uDIL8kQQRka6DTRelc6MEKZXtBmUu0yp-mzt8-j5/exec" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;font-size:11px">
         <button class="fbtn pri" onclick="gdSave()" style="padding:0 14px;white-space:nowrap">Connect</button>
       </div>
     </div>
@@ -593,32 +593,39 @@ function out(o){return ContentService.createTextOutput(JSON.stringify(o)).setMim
 
   <!-- GOOGLE SHEETS SYNC -->
   <div class="card" style="padding:16px;margin-bottom:10px;">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
       <span style="font-size:16px;">☁</span>
-      <div style="font-size:13px;font-weight:600;">Google Sheets Auto-Sync</div>
+      <div style="font-size:13px;font-weight:600;">Google Sheets — Auto Sync</div>
       <span id="gs-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--br2);margin-left:auto;flex-shrink:0;"></span>
       <span id="gs-status-txt" style="font-size:10px;color:var(--t3);">Not connected</span>
     </div>
-    <div style="font-size:11px;color:var(--t3);margin-bottom:10px">Paste published CSV URLs — inventory syncs automatically</div>
-    <div style="margin-bottom:8px">
-      <label class="fl">Sheet 1 — Master Data (required)</label>
-      <div style="display:flex;gap:6px"><input class="fi" type="text" id="gs-url" placeholder="https://docs.google.com/spreadsheets/d/…/pub?output=csv" style="flex:1;font-size:11px">
-      <button class="fbtn pri" onclick="gsSave()" id="gs-save-btn" style="padding:0 14px;white-space:nowrap">Connect</button></div>
+    <div style="font-size:11px;color:var(--t3);margin-bottom:10px;">
+      Paste <b>one link</b> for the entire sheet — app auto-detects <b>master data</b>, <b>out of stock</b> and <b>unit sold</b> tabs
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-      <div><label class="fl">Sheet 2 — Out of Stock (optional)</label><input class="fi" type="text" id="gs-oos-url" placeholder="Published CSV URL…" style="font-size:11px"></div>
-      <div><label class="fl">Sheet 3 — Unit Sold (optional)</label><input class="fi" type="text" id="gs-sold-url" placeholder="Published CSV URL…" style="font-size:11px"></div>
+    <div style="margin-bottom:8px;">
+      <label class="fl">Google Sheet URL (pubhtml or share link)</label>
+      <div style="display:flex;gap:6px;">
+        <input class="fi" type="text" id="gs-url"
+          value="https://docs.google.com/spreadsheets/d/e/2PACX-1vSFqGfap3PswHNk8jW2ERQMuEeFNliVp3rQfhtRIu0lUvE4Rpk46g4EtuJAnof-X9jGYrLk0AcT3XpT/pubhtml"
+          placeholder="https://docs.google.com/spreadsheets/…/pubhtml"
+          style="flex:1;font-size:11px;">
+        <button class="fbtn pri" onclick="gsSave()" id="gs-save-btn" style="padding:0 14px;white-space:nowrap;">Connect</button>
+      </div>
     </div>
+    <!-- Detected tabs badge row -->
+    <div id="gs-tabs-row" style="display:none;margin-bottom:10px;"></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-      <button class="btn" onclick="gsFetch()" id="gs-sync-btn" style="display:none">↻ Sync Now</button>
-      <button class="btn" onclick="gsAutoToggle()" id="gs-auto-btn" style="display:none">⏱ Auto: OFF</button>
-      <button class="btn" onclick="gsDisconnect()" id="gs-disc-btn" style="display:none;color:var(--red)">✕ Disconnect</button>
+      <button class="btn" onclick="gsFetch()" id="gs-sync-btn" style="display:none;">↻ Sync Now</button>
+      <button class="btn" onclick="gsAutoToggle()" id="gs-auto-btn" style="display:none;">⏱ Auto: OFF</button>
+      <button class="btn" onclick="gsDisconnect()" id="gs-disc-btn" style="display:none;color:var(--red);">✕ Disconnect</button>
     </div>
-    <div id="gs-msg" style="font-size:11px;color:var(--t3);min-height:14px"></div>
-    <div style="margin-top:8px;padding:8px;background:var(--w3);border-radius:var(--r2);font-size:10px;color:var(--t2);line-height:1.7">
-      <b>Publish CSV:</b> Google Sheet → File → Share → Publish to web → select sheet → CSV → Publish → copy URL
+    <div id="gs-msg" style="font-size:11px;min-height:14px;"></div>
+    <div style="margin-top:8px;padding:8px;background:var(--w3);border-radius:var(--r2);font-size:10px;color:var(--t2);line-height:1.7;">
+      <b>Get URL:</b> Google Sheet → File → Share → <b>Publish to web</b> → Entire Document → Web page → Publish → copy link
     </div>
   </div>
+
+
 
   <div class="card" style="padding:16px;margin-bottom:10px;">
     <div style="font-size:13px;font-weight:600;margin-bottom:10px;">✏ Quick Stock Edit</div>
@@ -820,7 +827,13 @@ function out(o){return ContentService.createTextOutput(JSON.stringify(o)).setMim
 
 
 
+
+
+
 <script>
+
+
+
 
 
 
@@ -1612,97 +1625,284 @@ function loadLocal(){
 
 
 // ════════════════════════════════════════════════════════
-//  GOOGLE SHEETS SYNC
+//  GOOGLE SHEETS SYNC  (single URL, auto-detects all tabs)
 // ════════════════════════════════════════════════════════
-var gsAutoTimer=null,gsAutoOn=false;
-function gsUrlChanged(){var btn=document.getElementById('gs-save-btn');if(btn)btn.textContent=gv('gs-url')?'Connect':'Connect';}
-function gsSave(){
-  var url=gv('gs-url').trim();if(!url){gsMsg('Paste your published CSV URL','err');return;}
-  var csvUrl=gsToCSV(url);if(!csvUrl){gsMsg('Invalid Google Sheet URL','err');return;}
-  localStorage.setItem('rosy_gs_url',url);
-  localStorage.setItem('rosy_gs_oos',gv('gs-oos-url').trim());
-  localStorage.setItem('rosy_gs_sold',gv('gs-sold-url').trim());
-  gsUpdateUI();gsFetch();
+var gsAutoTimer = null, gsAutoOn = false;
+
+// ── URL helpers ──────────────────────────────────────────
+
+// Extract the base spreadsheet URL  (/e/KEY or /d/ID)
+function gsBase(url) {
+  if (!url) return null;
+  // /e/ published format
+  var m = url.match(/(https:\/\/docs\.google\.com\/spreadsheets\/d\/e\/[^\/]+)/);
+  if (m) return m[1];
+  // /d/ edit format
+  m = url.match(/(https:\/\/docs\.google\.com\/spreadsheets\/d\/[^\/]+)/);
+  if (m) return m[1];
+  return null;
 }
-function gsToCSV(url){
-  if(url.indexOf('output=csv')>=0||url.indexOf('.csv')>=0)return url;
-  var m=url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);if(!m)return null;
-  var gidM=url.match(/gid=(\d+)/);
-  return'https://docs.google.com/spreadsheets/d/'+m[1]+'/export?format=csv&gid='+(gidM?gidM[1]:'0');
+
+// Build CSV URL for a specific gid
+function gsCsvUrl(base, gid) {
+  return base + '/pub?gid=' + gid + '&single=true&output=csv';
 }
-function gsParseCSV(text){
-  var lines=text.split('\n'),rows=[];
-  for(var i=0;i<lines.length;i++){
-    var line=lines[i].replace(/\r/,'');if(!line.trim())continue;
-    var row=[],cur='',inQ=false;
-    for(var j=0;j<line.length;j++){var ch=line[j];if(ch==='"')inQ=!inQ;else if(ch===','&&!inQ){row.push(cur);cur='';}else cur+=ch;}
-    row.push(cur);rows.push(row);
+
+// ── Tab discovery ─────────────────────────────────────────
+// Fetch pubhtml page and parse tab names → gids
+function gsDiscoverTabs(base, cb) {
+  var pubUrl = base + '/pubhtml';
+  fetch(pubUrl)
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(pageHtml) {
+      var tabs = [];
+      // Pattern: <li class="..." id="sheet-button-GID"> ... <span class="name">NAME</span>
+      var re1 = /id="sheet-button-(\d+)"[\s\S]*?<span[^>]*class="name"[^>]*>([\s\S]*?)<\/span>/g;
+      var m;
+      while ((m = re1.exec(pageHtml)) !== null) {
+        tabs.push({ gid: m[1], name: m[2].trim().toLowerCase() });
+      }
+      // Fallback pattern: bootstrapData or tab links with #gid=
+      if (!tabs.length) {
+        var re2 = /gid=(\d+)[^"]*"[^>]*title="([^"]+)"/g;
+        while ((m = re2.exec(pageHtml)) !== null) {
+          tabs.push({ gid: m[1], name: m[2].trim().toLowerCase() });
+        }
+      }
+      cb(tabs, null);
+    })
+    .catch(function(err) { cb([], err); });
+}
+
+// Find gid for a tab by matching name variants
+function gsMatchTab(tabs, variants) {
+  for (var i = 0; i < tabs.length; i++) {
+    var n = tabs[i].name.replace(/\s+/g,' ').trim();
+    for (var j = 0; j < variants.length; j++) {
+      if (n === variants[j] || n.indexOf(variants[j]) >= 0) return tabs[i].gid;
+    }
   }
-  return rows;
+  return null;
 }
-function gsFetch(){
-  var url=localStorage.getItem('rosy_gs_url');if(!url){gsMsg('No sheet connected','err');return;}
-  var csvUrl=gsToCSV(url);if(!csvUrl){gsMsg('Invalid URL','err');return;}
-  gsDot('sync');gsMsg('Fetching from Google Sheets…');
-  fetch(csvUrl).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status+' — publish sheet as CSV first');return r.text();})
-  .then(function(masterText){
-    var oosUrl=localStorage.getItem('rosy_gs_oos')?gsToCSV(localStorage.getItem('rosy_gs_oos')):null;
-    var soldUrl=localStorage.getItem('rosy_gs_sold')?gsToCSV(localStorage.getItem('rosy_gs_sold')):null;
-    return Promise.all([
-      Promise.resolve(gsParseCSV(masterText)),
-      oosUrl?fetch(oosUrl).then(function(r){return r.ok?r.text():'';}).catch(function(){return'';}):Promise.resolve(''),
-      soldUrl?fetch(soldUrl).then(function(r){return r.ok?r.text():'';}).catch(function(){return'';}):Promise.resolve('')
-    ]);
-  }).then(function(res){
-    var masterRows=res[0],oosText=res[1],soldText=res[2];
-    var oosSet={};if(oosText)gsParseCSV(oosText).slice(1).forEach(function(r){var n=(r[0]||'').trim();if(n)oosSet[n]=1;});
-    var salesMap={};if(soldText)gsParseCSV(soldText).slice(1).forEach(function(r){var n=(r[0]||'').trim(),q=parseFloat(r[2])||0;if(n)salesMap[n]=(salesMap[n]||0)+q;});
-    var mapped=[];
-    masterRows.slice(1).forEach(function(row){
-      var name=(row[CI.name]||'').trim();if(!name||name==='nan')return;
-      var pn=parseName(name),pc=parseCode((row[CI.code]||'').toString());
-      mapped.push({n:name,cat:(row[CI.cat]||'').toString(),des:pn.des,col:pn.col,sz:pn.sz,pty:pc.pty,brd:pc.brd,cr:pc.cr,cp:parseFloat(row[CI.cp])||0,mrp:parseFloat(row[CI.mrp])||0,st:parseFloat(row[CI.stock])||0,sold:salesMap[name]||0,oos:oosSet[name]?1:0});
-    });
-    if(!mapped.length)throw new Error('0 rows parsed');
-    processData(mapped);saveLocal();localStorage.setItem('rosy_upd',new Date().toLocaleString('en-IN'));localStorage.setItem('rosy_gs_last',new Date().toLocaleTimeString('en-IN'));
-    gsDot('on');gsMsg('✓ Synced '+mapped.length+' items · '+new Date().toLocaleTimeString('en-IN'),'ok');
-    sInit=false;slInit=false;szdInit=false;ordInit=false;renderUpload();
-    var cur=document.querySelector('.page.on');if(cur){var id=cur.id.replace('page-','');var map={search:renderSearch,overview:renderOV,category:renderCat,party:renderPty,size:renderSz,sales:renderSales};if(map[id])map[id]();}
-  }).catch(function(err){gsDot('err');gsMsg('✗ '+err.message,'err');});
+
+// Show detected tab badges
+function gsShowTabs(tabs, masterGid, oosGid, soldGid) {
+  var row = document.getElementById('gs-tabs-row');
+  if (!row) return;
+  if (!tabs.length && masterGid === null) { row.style.display='none'; return; }
+  var h = '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">';
+  h += '<span style="font-size:10px;font-weight:700;color:var(--t3);">Sheets found:</span>';
+  function badge(name, gid, color) {
+    var ok = gid !== null;
+    return '<span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;'
+      + 'background:' + (ok?'var(--grnL)':'var(--redL)') + ';'
+      + 'color:' + (ok?'var(--grn)':'var(--red)') + ';'
+      + 'border:1px solid ' + (ok?'rgba(26,94,48,.2)':'rgba(192,48,58,.2)') + ';">'
+      + (ok?'✓ ':'✗ ') + name + '</span>';
+  }
+  h += badge('master data',   masterGid);
+  h += badge('out of stock',  oosGid);
+  h += badge('unit sold',     soldGid);
+  h += '</div>';
+  row.innerHTML = h;
+  row.style.display = 'block';
 }
-function gsAutoToggle(){
-  gsAutoOn=!gsAutoOn;var btn=document.getElementById('gs-auto-btn');
-  if(gsAutoOn){if(btn){btn.textContent='⏱ Auto: ON (5min)';btn.style.color='var(--grn)';}gsAutoTimer=setInterval(function(){gsFetch();},5*60*1000);localStorage.setItem('rosy_gs_auto','1');gsMsg('Auto-sync ON — every 5 min');}
-  else{if(btn){btn.textContent='⏱ Auto: OFF';btn.style.color='';}if(gsAutoTimer)clearInterval(gsAutoTimer);localStorage.setItem('rosy_gs_auto','0');gsMsg('Auto-sync OFF');}
-}
-function gsDisconnect(){
-  if(!confirm('Remove Google Sheet connection?'))return;
-  gsAutoOn=false;if(gsAutoTimer)clearInterval(gsAutoTimer);
-  ['rosy_gs_url','rosy_gs_oos','rosy_gs_sold','rosy_gs_auto','rosy_gs_last'].forEach(function(k){localStorage.removeItem(k);});
-  ['gs-url','gs-oos-url','gs-sold-url'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
-  gsUpdateUI();gsDot('off');gsMsg('Disconnected');
-}
-function gsDot(s){
-  var dot=document.getElementById('gs-status-dot'),txt=document.getElementById('gs-status-txt');if(!dot||!txt)return;
-  if(s==='on'){dot.style.background='var(--grn)';txt.textContent='Connected';}
-  else if(s==='sync'){dot.style.background='var(--gld)';txt.textContent='Syncing…';}
-  else if(s==='err'){dot.style.background='var(--red)';txt.textContent='Error';}
-  else{dot.style.background='var(--br2)';txt.textContent='Not connected';}
-}
-function gsMsg(m,t){var e=document.getElementById('gs-msg');if(e){e.textContent=m;e.style.color=t==='ok'?'var(--grn)':t==='err'?'var(--red)':'var(--t3)';}}
-function gsUpdateUI(){
-  var has=!!localStorage.getItem('rosy_gs_url');
-  ['gs-sync-btn','gs-auto-btn','gs-disc-btn'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display=has?'inline-block':'none';});
-  var sb=document.getElementById('gs-save-btn');if(sb)sb.textContent=has?'Update':'Connect';
-}
-function gsLoadSaved(){
-  var url=localStorage.getItem('rosy_gs_url');if(!url)return;
-  function sv(id,k){var e=document.getElementById(id);if(e)e.value=localStorage.getItem(k)||'';}
-  sv('gs-url','rosy_gs_url');sv('gs-oos-url','rosy_gs_oos');sv('gs-sold-url','rosy_gs_sold');
+
+// ── Main save & fetch ─────────────────────────────────────
+
+function gsSave() {
+  var url = gv('gs-url').trim();
+  if (!url) { gsMsg('Paste your Google Sheet URL', 'err'); return; }
+  var base = gsBase(url);
+  if (!base) { gsMsg('Invalid URL — paste the Google Sheet link', 'err'); return; }
+  localStorage.setItem('rosy_gs_url', url);
   gsUpdateUI();
-  var last=localStorage.getItem('rosy_gs_last');gsDot(last?'on':'off');gsMsg(last?'Last synced: '+last:'Connected — click Sync Now');
-  if(localStorage.getItem('rosy_gs_auto')==='1'){gsAutoOn=false;gsAutoToggle();}
+  gsFetch();
 }
+
+function gsFetch() {
+  var url  = localStorage.getItem('rosy_gs_url');
+  if (!url) { gsMsg('No sheet connected','err'); return; }
+  var base = gsBase(url);
+  if (!base) { gsMsg('Invalid URL saved','err'); return; }
+
+  gsDot('sync'); gsMsg('Detecting sheets…');
+
+  gsDiscoverTabs(base, function(tabs, err) {
+    // Match tabs by name
+    var masterGid = gsMatchTab(tabs, ['master data','master','inventory']);
+    var oosGid    = gsMatchTab(tabs, ['out of stock','out-of-stock','oos']);
+    var soldGid   = gsMatchTab(tabs, ['unit sold','unitsold','sold','sales']);
+
+    // Fallback: if discovery failed, use known gids (0 = first sheet)
+    if (masterGid === null) masterGid = '0';
+
+    gsShowTabs(tabs, masterGid, oosGid, soldGid);
+
+    if (tabs.length) {
+      gsMsg('Found ' + tabs.length + ' sheets — fetching data…');
+    } else {
+      gsMsg('Sheet list not available — using default tab order…');
+    }
+
+    // Now fetch all 3 CSVs
+    var masterCsv = gsCsvUrl(base, masterGid);
+    var oosCsv    = oosGid  ? gsCsvUrl(base, oosGid)  : null;
+    var soldCsv   = soldGid ? gsCsvUrl(base, soldGid) : null;
+
+    var oosP  = oosCsv  ? fetch(oosCsv).then(function(r){return r.ok?r.text():'';}).catch(function(){return '';}) : Promise.resolve('');
+    var soldP = soldCsv ? fetch(soldCsv).then(function(r){return r.ok?r.text():'';}).catch(function(){return '';}) : Promise.resolve('');
+
+    fetch(masterCsv)
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' — make sure sheet is published to web');
+        return r.text();
+      })
+      .then(function(masterText) {
+        return Promise.all([Promise.resolve(gsParseCSV(masterText)), oosP, soldP]);
+      })
+      .then(function(res) {
+        var masterRows = res[0], oosText = res[1], soldText = res[2];
+
+        // Parse OOS set
+        var oosSet = {};
+        if (oosText) {
+          gsParseCSV(oosText).slice(1).forEach(function(r) {
+            var n = (r[0]||'').trim(); if (n) oosSet[n] = 1;
+          });
+        }
+
+        // Parse sales map
+        var salesMap = {};
+        if (soldText) {
+          gsParseCSV(soldText).slice(1).forEach(function(r) {
+            var n = (r[0]||'').trim(), q = parseFloat(r[2])||0;
+            if (n) salesMap[n] = (salesMap[n]||0) + q;
+          });
+        }
+
+        // Parse master rows (skip header row 0)
+        var mapped = [];
+        masterRows.slice(1).forEach(function(row) {
+          var name = (row[CI.name]||'').trim();
+          if (!name || name === 'nan') return;
+          var pn = parseName(name), pc = parseCode((row[CI.code]||'').toString());
+          mapped.push({
+            n:name, cat:(row[CI.cat]||'').toString(),
+            des:pn.des, col:pn.col, sz:pn.sz,
+            pty:pc.pty, brd:pc.brd, cr:pc.cr,
+            cp: parseFloat(row[CI.cp])   ||0,
+            mrp:parseFloat(row[CI.mrp])  ||0,
+            st: parseFloat(row[CI.stock])||0,
+            sold:salesMap[name]||0,
+            oos: oosSet[name]?1:0
+          });
+        });
+
+        if (!mapped.length) throw new Error('0 valid rows parsed from master sheet');
+
+        processData(mapped);
+        saveLocal();
+        localStorage.setItem('rosy_upd',  new Date().toLocaleString('en-IN'));
+        localStorage.setItem('rosy_gs_last', new Date().toLocaleTimeString('en-IN'));
+
+        var inS   = mapped.filter(function(r){return r.st>0&&!r.oos;}).length;
+        var oosC  = Object.keys(oosSet).length;
+        var soldC = Object.keys(salesMap).length;
+        var totS  = mapped.reduce(function(a,r){return a+r.sold;},0);
+
+        gsDot('on');
+        gsMsg('✓ Synced ' + fn(mapped.length) + ' items · '
+          + fn(inS) + ' in stock'
+          + (oosC  ? ' · ' + fn(oosC)  + ' OOS'        : '')
+          + (totS  ? ' · ' + fn(totS)  + ' units sold'  : '')
+          + ' — ' + new Date().toLocaleTimeString('en-IN'), 'ok');
+
+        sInit=false; slInit=false; szdInit=false; ordInit=false; phCatInit=false;
+        renderUpload();
+
+        // refresh current page
+        var cur = document.querySelector('.page.on');
+        if (cur) {
+          var id  = cur.id.replace('page-','');
+          var map = {search:renderSearch,overview:renderOV,category:renderCat,
+                     party:renderPty,size:renderSz,sales:renderSales,photos:renderPhotos};
+          if (map[id]) map[id]();
+        }
+      })
+      .catch(function(err) {
+        gsDot('err');
+        gsMsg('✗ ' + err.message, 'err');
+      });
+  });
+}
+
+function gsAutoToggle() {
+  gsAutoOn = !gsAutoOn;
+  var btn = document.getElementById('gs-auto-btn');
+  if (gsAutoOn) {
+    if (btn) { btn.textContent='⏱ Auto: ON (5min)'; btn.style.color='var(--grn)'; btn.style.borderColor='rgba(26,94,48,.3)'; }
+    gsAutoTimer = setInterval(function(){ gsFetch(); }, 5*60*1000);
+    localStorage.setItem('rosy_gs_auto','1');
+    gsMsg('Auto-sync ON — refreshes every 5 minutes');
+  } else {
+    if (btn) { btn.textContent='⏱ Auto: OFF'; btn.style.color=''; btn.style.borderColor=''; }
+    if (gsAutoTimer) clearInterval(gsAutoTimer);
+    localStorage.setItem('rosy_gs_auto','0');
+    gsMsg('Auto-sync OFF');
+  }
+}
+
+function gsDisconnect() {
+  if (!confirm('Remove Google Sheet connection?')) return;
+  gsAutoOn = false;
+  if (gsAutoTimer) clearInterval(gsAutoTimer);
+  ['rosy_gs_url','rosy_gs_oos','rosy_gs_sold','rosy_gs_auto','rosy_gs_last']
+    .forEach(function(k){ localStorage.removeItem(k); });
+  var inp = document.getElementById('gs-url');
+  if (inp) inp.value = '';
+  var tr = document.getElementById('gs-tabs-row');
+  if (tr) tr.style.display = 'none';
+  gsUpdateUI(); gsDot('off'); gsMsg('Disconnected');
+}
+
+function gsDot(s) {
+  var dot = document.getElementById('gs-status-dot');
+  var txt = document.getElementById('gs-status-txt');
+  if (!dot||!txt) return;
+  var m = {on:['var(--grn)','Connected'], sync:['var(--gld)','Syncing…'],
+           err:['var(--red)','Error'],    off:['var(--br2)','Not connected']};
+  dot.style.background = (m[s]||m.off)[0];
+  txt.textContent       = (m[s]||m.off)[1];
+}
+function gsMsg(msg, t) {
+  var e = document.getElementById('gs-msg');
+  if (!e) return;
+  e.textContent = msg;
+  e.style.color = t==='ok'?'var(--grn)':t==='err'?'var(--red)':'var(--t3)';
+}
+function gsUpdateUI() {
+  var has = !!localStorage.getItem('rosy_gs_url');
+  ['gs-sync-btn','gs-auto-btn','gs-disc-btn'].forEach(function(id){
+    var e = document.getElementById(id); if(e) e.style.display = has?'inline-block':'none';
+  });
+  var sb = document.getElementById('gs-save-btn');
+  if (sb) sb.textContent = has ? 'Update' : 'Connect';
+}
+function gsLoadSaved() {
+  var url = localStorage.getItem('rosy_gs_url') || DEFAULT_GS;
+  if (!url) return;
+  var inp = document.getElementById('gs-url');
+  if (inp) inp.value = url;
+  gsUpdateUI();
+  var last = localStorage.getItem('rosy_gs_last');
+  if (last) { gsDot('on'); gsMsg('Last synced: ' + last); }
+  if (localStorage.getItem('rosy_gs_auto')==='1') { gsAutoOn=false; gsAutoToggle(); }
+}
+
 
 // ════════════════════════════════════════════════════════
 //  DOWNLOAD EXCEL
@@ -2048,7 +2248,13 @@ function gdDot(s){
   if(dot)dot.style.background=m[s][0];if(txt)txt.textContent=m[s][1];
 }
 function gdMsg(msg,t){var e=document.getElementById('gd-msg');if(e){e.textContent=msg;e.style.color=t==='ok'?'var(--grn)':t==='err'?'var(--red)':'var(--t3)';}}
-function gdUpdateUI(){var url=localStorage.getItem('rosy_gd');var inp=document.getElementById('gd-url');if(inp&&url)inp.value=url;}
+function gdUpdateUI(){
+  var url=localStorage.getItem('rosy_gd')||DEFAULT_GD;
+  var inp=document.getElementById('gd-url');
+  if(inp&&url&&!inp.value) inp.value=url;
+  // also show connected state if default is set
+  if(url) gdDot('on');
+}
 
 function gdUpload(k,dataURL,cb){
   var url=localStorage.getItem('rosy_gd');if(!url){cb&&cb(null);return;}
@@ -2427,6 +2633,15 @@ function phAddFromSearch(){
   toast('Search for an item → tap 📷 on the color row to add photo', '');
 }
 
+// ── DEFAULT CONNECTIONS (pre-configured) ──
+var DEFAULT_GD  = 'https://script.google.com/macros/s/AKfycbzLZlvbujf40_u5xMk_-xeSNFS_uDIL8kQQRka6DTRelc6MEKZXtBmUu0yp-mzt8-j5/exec';
+var DEFAULT_GS  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSFqGfap3PswHNk8jW2ERQMuEeFNliVp3rQfhtRIu0lUvE4Rpk46g4EtuJAnof-X9jGYrLk0AcT3XpT/pubhtml';
+
+function initDefaults(){
+  // Save defaults if nothing saved yet
+  if(!localStorage.getItem('rosy_gd'))  localStorage.setItem('rosy_gd',  DEFAULT_GD);
+  if(!localStorage.getItem('rosy_gs_url'))  localStorage.setItem('rosy_gs_url',  DEFAULT_GS);
+}
 // ════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════
@@ -2434,9 +2649,22 @@ var xljs=document.createElement('script');
 xljs.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
 document.head.appendChild(xljs);
 
+initDefaults();  // set default URLs if not saved
 if(!loadLocal()){processData(RAW_DATA);saveLocal();}
 pdbInit(function(){});  // warm up photo DB
 renderSearch();
+// Auto-sync from Google Sheets on startup (use saved or default)
+setTimeout(function(){
+  var gsUrl=localStorage.getItem('rosy_gs_url');
+  if(gsUrl){
+    gsLoadSaved();
+    gsFetch();
+  }
+}, 800);
+
+
+
+
 
 
 
